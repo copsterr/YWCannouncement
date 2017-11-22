@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Announcement</title>
+	<meta charset="utf-8">
+
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+	crossorigin="anonymous">//jquery</script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script>
+		//creating arrays of majors
+		var pool = [];
+		var programming = [];
+		var design = [];
+		var marketing = [];
+		var content = [];
+
+		$.getJSON("announcement.json", function(json) {
+   			console.log(json); // this will show the info it in firebug console
+   			pool = json;
+			for(var i = 0; i < json.length; i++) {
+				if(json[i].major == "programming") programming.push(json[i]);
+				else if(json[i].major == "design") design.push(json[i]);
+				else if(json[i].major == "marketing") marketing.push(json[i]);
+				else if(json[i].major == "content") content.push(json[i]);
+			}
+		});
+
+		function ascendSort(arr) {
+			//using bubble sort algorithm
+			for (var i = 0; i < arr.length; i++) {
+				for (var j = 0; j < (arr.length-i-1); j++) {
+					//now = Number(arr[j].interviewRef.substring(2,4));
+					//next = Number(arr[j+1].interviewRef.substring(2,4));
+					if ( Number(arr[j].interviewRef.substring(2,4)) > Number(arr[j+1].interviewRef.substring(2,4)) ) {
+						var temp = arr[j];
+						arr[j] = arr[j+1];
+						arr[j+1] = temp;
+					}
+				}
+			}
+		}
+		
+		//print table of each major
+		function printTable(arr) {
+			var objTable = document.getElementById("table");
+			//objTable.innerHTML = arr[0].major + " is Clicked!"; //sync check
+			ascendSort(arr); //sorting
+			var result;
+			result = "<h2 class='text-center'><b>" + arr[0].major.toUpperCase() + "</b></h2>";
+			result += "<table>";
+			result += "<tr>";
+			result += "<th>First Name</th>";
+			result += "<th>Last Name</th>";
+			result += "<th>Interview Reference</th>";
+			result += "</tr>";
+
+			for(var i = 0; i < arr.length; i++) {
+				result += "<tr>";
+				result += "<td>"+arr[i].firstName+"</td>";
+				result += "<td>"+arr[i].lastName+"</td>";
+				result += "<td id='intRef'>"+arr[i].interviewRef+"</td>";
+				result += "</tr>";
+			}
+			objTable.innerHTML = result;
+		}
+
+		//print objective of each major
+		function printObjective(major, UniqueId) {
+				var objective = document.getElementById(UniqueId);
+				var output = "<h3 style='font-size:1.3em'><b>Objective</b></h3>";
+
+				if (major == "programming" ) {
+					output += "<p>ให้เขียน เว็บไซต์ประกาศผลผู้ผ่านเข้ารอบสัมภาษณ์ของ YWC#15 โดยใช้ข้อมูลจาก <a href='https://ywc15.ywc.in.th/api/interview' target='blank'>API</a> โดยมี Feature ดังนี้</p>";
+					output += "<ul><li>ดึงข้อมูลจาก API โดยตรง</li><li>ให้แสดงผลแยกแต่ละสาขา</li><li>มีระบบค้นหาชื่อผ่านกล่อง Search</li><li>ความสามารถหรือ Feature พิเศษอื่น ๆ ที่มีความแตกต่าง และแสดงความสามารถของน้องออกมาให้ได้มากที่สุด</li></ul>";
+					output += "เมื่อทำเสร็จแล้วให้ Push Source Code ขึ้น GitHub ก่อนเวลาสัมภาษณ์";
+				}
+
+				else if (major == "content") {
+					output += "<p>ให้น้อง ๆ เลือกทำคอนเทนต์ใด คอนเทนต์หนึ่งจาก 2 หัวข้อด้านล่าง โดยต้องทำเป็นคอนเทนต์ออกมาจริงเท่านั้น ไม่จำกัดรูปแบบการนำเสนอ</p>";
+					output += "<p>หัวข้อที่ให้เลือก</p>";
+					output += "<ul><li>คอนเทนต์ที่ทำให้ผู้ใช้ Social เข้าใจ Cyberbullying และตระหนักถึงปัญหาที่เกิดขึ้นจาก Cyberbullying</li><li>คอนเทนต์ที่ทำให้คนไทยเปลี่ยนพฤติกรรมเสพติดหน้าจอ เสพติด Social หันมาพูดคุยกัน เจอหน้ากันในชีวิตจริง ๆ มากกว่าที่เป็นอยู่</li></ul>";
+				}
+
+				else if (major == "design") {
+					output += '<p>ให้ผู้ผ่านเข้ารอบสัมภาษณ์ออกแบบเว็บไซต์ของ <b>"คณะรักษาความสงบแห่งชาติ หรือ คสช."</b>เพื่อเป็นสื่อกลางในการประชาสัมพันธ์นโยบายต่าง ๆ และเป็นสื่อกลางระหว่างประชาชนกับคณะรักษาความสงบแห่งชาติ โดยให้ออกแบบในลักษณะของ One Page Design Website</p>';
+					output += "** สำหรับผู้ผ่านเข้ารอบสัมภาษณ์คนใดทำ CSS มา คณะกรรมการจะพิจารณาเป็นพิเศษ"
+				}
+
+				else if (major == "marketing") {
+					output += "ให้ทำแผนการตลาด (Marketing Plan) สำหรับเว็บไซต์หนึ่งเว็บไซต์ โดยเลือกเว็บไซต์ใด ๆ ก็ได้ ทั้งเว็บไซต์ของไทยและเว็บไซต์ของต่างประเทศ";
+					output += "นำเสนอในรูปแบบพรีเซนเทชั่น ไม่เกิน 10 หน้า ภายในเวลา 5 นาที";
+				}
+
+				objective.innerHTML = output;
+			}
+
+		//search input data from user
+		function displayNomineeData() {
+			var obj = document.getElementById("nominee-data");
+			var input = document.getElementById("searchInput").value;
+			var result = "<p>Oops! We couldn't find your name on the list. Please try again... :(</p>";
+			var sentinel = false; //sentinel is used to checked if input is found in database
+
+			for (var i = 0; i < pool.length; i++) {
+				if (pool[i].firstName == input || pool[i].lastName == input) {
+					sentinel = true;
+					result = "";
+					result += "<h3 class='text-center'>Interview Information</h3>";
+					result += "<p><b>Name :</b>" + pool[i].firstName + " " + pool[i].lastName + "</p>";
+					result += "<p><b>Major :</b>" + pool[i].major + "</p>";
+					result += "<p><b>Interview Reference :</b>" + pool[i].interviewRef + "</p>";
+					break;
+
+				}
+				else if (input.length > 1) {
+					var temp = input.split(separator = " ");
+					if (pool[i].firstName == temp[0] && pool[i].lastName == temp[1]) {
+						sentinel = true;
+						result = "";
+						result += "<h3 class='text-center'>Interview Information</h3>";
+						result += "<p><b>Name :</b>" + pool[i].firstName + " " + pool[i].lastName + "</p>";
+						result += "<p><b>Major :</b>" + pool[i].major + "</p>";
+						result += "<p><b>Interview Reference :</b>" + pool[i].interviewRef + "</p>";
+						break;
+					}
+				}
+				else {
+					//result = "<p>Oops! We couldn't find your name on the list. Please try again... :(</p>";
+				}
+			}
+			obj.innerHTML = result;
+			if (sentinel == true) printObjective(pool[i].major, "objective");
+			else document.getElementById("objective").innerHTML = ""; //reset objective
+		}
+	</script>
+	<style type="text/css">
+		table {
+			font-size: 1.3em;
+			margin-bottom: 20px;
+		}
+		.stylish-input-group .input-group-addon{
+		    background: white !important; 
+		}
+		.stylish-input-group .form-control{
+			border-right:0; 
+			box-shadow:0 0 0; 
+			border-color:#ccc;
+		}
+		.stylish-input-group button{
+		    border:0;
+		    background:transparent;
+		}
+		#table th {
+			text-align: center;
+			padding: 0px 10px 0px 10px;
+			width: 300px;
+			border: 2px solid black;
+		}
+
+		#table td {
+			border: 1px solid black;
+			padding: 0px 10px 0px 10px;
+		}
+		
+		#intRef {
+			text-align: center;
+		}
+
+		#majorBlock div {
+			color: white;
+			font-size: 2em;
+			height: 200px;
+			line-height: 200px;
+			margin-bottom: 20px;
+			border-color: white;
+		}
+
+		#majorBlock div:hover {
+			border: 5px solid white;
+			transition: 0.5s;
+		}
+
+		#majorBlock div:active {
+			background-color: white;
+			color: black;
+		}
+
+		.active {
+			border: 5px solid white;
+		}
+
+		#contentBlock {
+			background-color: #ce9a4e;
+			border-top-left-radius: 10px;
+			border-bottom-left-radius: 10px;
+		}
+
+		#designBlock {
+			background-color: #ce4e4e;
+		}
+
+		#marketingBlock {
+			background-color: #456aa5;
+		}
+
+		#programmingBlock {
+			background-color: slategrey;
+			border-top-right-radius: 10px;
+			border-bottom-right-radius: 10px;
+		}
+
+	</style>
+</head>
+<body>
+	<div class="container">
+	 	<div class="row jumbotron" style="margin-top: 20px;">
+			<div class="col-lg-12">
+				<h1 class="text-center">YWC15 Announcement</h1>
+				<p>Congratulations to all considered. Please search for your name in the box below to see your information.</p>
+			</div>
+			<div class="col-sm-6 col-sm-offset-3">
+	            <div id="imaginary_container"> 
+	                <div class="input-group stylish-input-group">
+	                    <input type="text" class="form-control" placeholder="Search your name here..." id="searchInput" name="name" value="">
+	                    <span class="input-group-addon">	                    	
+	                        <button type="submit" data-toggle="modal" data-target="#myModal" onclick="displayNomineeData()">
+	                            <span class="glyphicon glyphicon-search"></span>
+	                        </button>	             
+	                    </span>
+	            	</div>	        		
+	            </div>
+       		</div>
+		</div>
+
+		<!-- Modal -->
+		<div class="modal fade" id="myModal" role="dialog">
+			<div class="modal-dialog">
+    
+			    <!-- Modal content-->
+			    <div class="modal-content">
+			        <div class="modal-header">
+			        	<button type="button" class="close" data-dismiss="modal">&times;</button>
+			        	<h4 class="modal-title">Search result</h4>
+			        </div>
+			        <div id="nominee-data" class="modal-body">
+			        	<!-- <p>Oops! We couldn't find your name on the list. Please try again... :(</p> -->
+			        </div>
+			        <div id="objective" class="modal-body">
+			        	<!-- this should show each major's objective -->
+			        </div>
+			        
+			        <div class="modal-footer">
+			        	<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			        </div>
+			    </div>
+			      
+			</div>
+		</div>
+  
+
+		<div class="row">
+			<div class="col-sm-12"><h2>Or find yourself by category.<h2></div>
+		</div>
+		<div class="row" id="majorBlock">
+			<div class="col-sm-3 text-center" id="contentBlock" onclick="printTable(content); printObjective('content','table-objective')">Content</div>
+			<div class="col-sm-3 text-center" id="designBlock" onclick="printTable(design); printObjective('design','table-objective')">Design</div>
+			<div class="col-sm-3 text-center" id="marketingBlock" onclick="printTable(marketing); printObjective('marketing','table-objective')">Marketing</div>
+			<div class="col-sm-3 text-center" id="programmingBlock" onclick="printTable(programming); printObjective('programming','table-objective')">Programming</div>
+		</div>
+		<div class="row">
+			<div id="table" class="col-sm-8 table-responsive"></div>
+			<div id="table-objective" class="col-sm-4" style="font-size: 1.2em;"></div>		
+		</div>
+	</div>
+</body>
+</html>
